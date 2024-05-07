@@ -6,13 +6,13 @@ namespace Reddit.Tracker.App
     {
         private readonly Task _completedTask = Task.CompletedTask;
         private readonly ILogger<Worker> _logger;
-        private readonly IWorkerManager _workerManager;
+        private readonly IPostManager _postManager;
         private Timer? _timer;
 
-        public Worker(ILogger<Worker> logger, IWorkerManager workerManager) 
+        public Worker(ILogger<Worker> logger, IPostManager postManager) 
         {
             _logger = logger;
-            _workerManager = workerManager;
+            _postManager = postManager;
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
@@ -29,11 +29,11 @@ namespace Reddit.Tracker.App
 
             _logger.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId} processing...", nameof(App));
 
-            _workerManager.TrackSubReddit();
+            _postManager.TrackPosts();
             Task.Run(async () =>
             {
                 _logger.LogInformation("Getting top Users...");
-                var topUsers = await _workerManager.GetTopUsers();
+                var topUsers = await _postManager.GetTopUsers();
                 topUsers
                     .AsParallel()
                     .ForAll((user) =>
@@ -42,7 +42,7 @@ namespace Reddit.Tracker.App
                 });
 
                 _logger.LogInformation("Getting top Posts...");
-                var topPosts = await _workerManager.GetTopPosts();
+                var topPosts = await _postManager.GetTopPosts();
                 topPosts
                     .AsParallel()
                     .ForAll((post) =>

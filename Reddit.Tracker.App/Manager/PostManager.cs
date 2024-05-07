@@ -8,14 +8,14 @@ namespace Reddit.Tracker.App.Manager
     /// <summary>
     /// Manager to orchestrate retrieval and presistance of Reddit posts
     /// </summary>
-    public class WorkerManager : IWorkerManager
+    public class PostManager : IPostManager
     {
-        private readonly ILogger<WorkerManager> _logger;
+        private readonly ILogger<PostManager> _logger;
         private readonly IRedditClient _redditClient;
         private readonly IRedditAuthClient _redditAuthClient;
         private readonly IGenericRepository<Repository.Model.Post> _postRepository;
         private readonly IGenericRepository<Repository.Model.TopPost> _topPostRepository;
-        public WorkerManager(ILogger<WorkerManager> logger, 
+        public PostManager(ILogger<PostManager> logger, 
             IRedditClient redditClient, 
             IRedditAuthClient redditAuthClient, 
             IGenericRepository<Repository.Model.Post> postRepository,
@@ -46,7 +46,7 @@ namespace Reddit.Tracker.App.Manager
             return result.Select(s => s.Value).OrderByDescending(s => s.UpVotes).ToList();
         }
 
-        public async Task TrackSubReddit()
+        public async Task TrackPosts()
         {
             var topPostsByDay = await GetTopPostsByDayAsync();
             var postsByDay = await GetPostsByDayAsync();

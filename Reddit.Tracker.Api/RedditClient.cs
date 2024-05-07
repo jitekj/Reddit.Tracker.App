@@ -13,6 +13,7 @@ namespace Reddit.Tracker.Api
     /// </summary>
     public class RedditClient : IRedditClient
     {
+        private Object lockObj = new Object();
         private readonly HttpClient _httpClient;
         private readonly IOptions<RedditClientConfiguration> _redditClientConfiguration;
         private static readonly ConcurrentDictionary<DateTime, int> _callQueue = new ConcurrentDictionary<DateTime, int>();
@@ -28,8 +29,18 @@ namespace Reddit.Tracker.Api
 
         public void SetToken(string token)
         {
-            _httpClient.DefaultRequestHeaders.Remove("Authorization");
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
+            //Added lock to prevent multiple threads changing the header values
+            //resulting in format exception
+            lock(lockObj)
+            {
+                IEnumerable<string> authValues;
+                _httpClient.DefaultRequestHeaders.TryGetValues("Authorization", out authValues);
+                if (authValues != null && authValues.Any())
+                {
+                    _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                }
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
+            }
         }
 
         /// <summary>

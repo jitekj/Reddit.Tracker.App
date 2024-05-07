@@ -14,7 +14,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSingleton<IGenericRepository<Post>, MemoryRepository<Post>>();
 builder.Services.AddSingleton<IGenericRepository<TopPost>, MemoryRepository<TopPost>>();
-builder.Services.AddSingleton<IWorkerManager, WorkerManager>();
+builder.Services.AddSingleton<IPostManager, PostManager>();
 builder.Services.Configure<RedditClientConfiguration>(builder.Configuration.GetSection("RedditClient"));
 builder.Services
     .AddHttpClient<IRedditClient, RedditClient>((sp, c) => ConfigureHttpClient(sp, c))

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Reddit.Tracker.App.Manager
 {
-    public interface IWorkerManager
+    public interface IPostManager
     {
-        Task TrackSubReddit();
+        Task TrackPosts();
         Task<IEnumerable<string>> GetTopUsers();
         Task<IEnumerable<TopPost>> GetTopPosts();
     }
