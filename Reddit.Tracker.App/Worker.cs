@@ -17,7 +17,7 @@ namespace Reddit.Tracker.App
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Starting...", nameof(App));
+            _logger.LogInformation($"Starting...");
             _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(1000));
 
             return _completedTask;
@@ -25,13 +25,13 @@ namespace Reddit.Tracker.App
 
         private void DoWork(object? state)
         {
-            //_timer?.Change(Timeout.Infinite, 0);
+            _logger.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId} processing...");
 
-            _logger.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId} processing...", nameof(App));
-
-            _postManager.TrackPosts();
             Task.Run(async () =>
             {
+                _logger.LogInformation("Tracking posts...");
+                await _postManager.TrackPosts();
+
                 _logger.LogInformation("Getting top Users...");
                 var topUsers = await _postManager.GetTopUsers();
                 topUsers
@@ -54,9 +54,9 @@ namespace Reddit.Tracker.App
 
         public Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("{Service} is stopping.", nameof(App));
+            _logger.LogInformation("Stopping...");
 
-            _timer?.Change(Timeout.Infinite, 0);
+             _timer?.Change(Timeout.Infinite, 0);
 
             return _completedTask;
         }
