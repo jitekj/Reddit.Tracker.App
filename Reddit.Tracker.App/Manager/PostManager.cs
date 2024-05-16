@@ -76,7 +76,7 @@ namespace Reddit.Tracker.App.Manager
                 catch(RateLimitException)
                 {
                     _logger.LogError("Rate limit exceeded");
-                    Thread.Sleep(5000);
+                    await Task.Delay(5000);
                 }
                 catch(Exception ex)
                 {
@@ -137,7 +137,7 @@ namespace Reddit.Tracker.App.Manager
                 catch(RateLimitException)
                 {
                     _logger.LogError("Rate limit exceeded");
-                    Thread.Sleep(5000);
+                    await Task.Delay(5000);
                 }
                 catch(Exception ex)
                 {

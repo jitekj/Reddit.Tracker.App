@@ -53,10 +53,7 @@ namespace Reddit.Tracker.Api
         {
             var subRedditDto = new SubRedditDto();
             string subRedditUri = $"r/{_subRedditName}/top/?t=day&show=all&sr_detail=false&after=&before=&limit=100&raw_json=1&count=0";
-            if (!CanBeQueued())
-            {
-                throw new RateLimitException();
-            }
+            
             _callQueue.TryAdd(DateTime.Now, Thread.CurrentThread.ManagedThreadId);
             var response = await _httpClient.GetAsync(subRedditUri);
             if (response.IsSuccessStatusCode)
@@ -86,10 +83,7 @@ namespace Reddit.Tracker.Api
         {
             var subRedditDto = new SubRedditDto();
             string subRedditUri = $"r/{_subRedditName}/?t=day&show=all&sr_detail=false&after=&before=&limit=100&raw_json=1&count=0";
-            if (!CanBeQueued())
-            {
-                throw new RateLimitException();
-            }
+            
             _callQueue.TryAdd(DateTime.Now, Thread.CurrentThread.ManagedThreadId);
             var response = await _httpClient.GetAsync(subRedditUri);
             if (response.IsSuccessStatusCode)
@@ -129,7 +123,7 @@ namespace Reddit.Tracker.Api
             IEnumerable<string>? headerValues = null;
             response.Headers.TryGetValues("X-Ratelimit-Remaining", out headerValues);
             var rateLimitRemaining = headerValues?.FirstOrDefault()?.ToString();
-            if (rateLimitRemaining == "0")
+            if (rateLimitRemaining == "0" || !CanBeQueued())
             {
                 throw new RateLimitException();
             }

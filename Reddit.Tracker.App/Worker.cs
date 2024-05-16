@@ -31,9 +31,10 @@ namespace Reddit.Tracker.App
             {
                 _logger.LogInformation("Tracking posts...");
                 await _postManager.TrackPosts();
+                var topPosts = await _postManager.GetTopPosts();
+                var topUsers = await _postManager.GetTopUsers();
 
                 _logger.LogInformation("Getting top Users...");
-                var topUsers = await _postManager.GetTopUsers();
                 topUsers
                     .AsParallel()
                     .ForAll((user) =>
@@ -42,7 +43,6 @@ namespace Reddit.Tracker.App
                 });
 
                 _logger.LogInformation("Getting top Posts...");
-                var topPosts = await _postManager.GetTopPosts();
                 topPosts
                     .AsParallel()
                     .ForAll((post) =>
